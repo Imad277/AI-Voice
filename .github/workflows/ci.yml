@@ -1,0 +1,81 @@
+# VoiceOS Phase 0 CI: offline checks plus real PostgreSQL RLS tests.
+# No provider APIs, no repository secrets, no deployment. Database passwords are generated
+# per run and exist only inside this job's throwaway PostgreSQL container.
+name: ci
+
+on:
+  push:
+    branches: [main, phase-0-foundation]
+  pull_request:
+    branches: [main, phase-0-foundation]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  phase0:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      VOICEOS_LIVE_ENABLED: "false"
+      VOICEOS_RECORDING_ENABLED: "false"
+      VOICEOS_PG_HOST: 127.0.0.1
+      VOICEOS_PG_PORT: "55432"
+      VOICEOS_PG_DB: voiceos
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.13.5"
+          python-version: "3.12"
+
+      - name: Install dependencies from uv.lock
+        run: uv sync --locked
+
+      - name: Ruff check
+        run: uv run ruff check .
+
+      - name: Ruff format check
+        run: uv run ruff format --check .
+
+      - name: mypy (strict)
+        run: uv run mypy
+
+      - name: Unit tests
+        run: uv run pytest -m "not postgres"
+
+      - name: Generate throwaway database passwords
+        run: |
+          for name in POSTGRES_PASSWORD VOICEOS_MIGRATOR_PASSWORD VOICEOS_APP_PASSWORD; do
+            value="$(openssl rand -hex 24)"
+            echo "::add-mask::${value}"
+            echo "${name}=${value}" >> "$GITHUB_ENV"
+          done
+
+      - name: Start PostgreSQL (docker compose, same init script and roles as local)
+        run: docker compose up -d --wait
+
+      - name: PostgreSQL / RLS tests (non-owner app role)
+        run: uv run pytest -m postgres -rs --junitxml=postgres-results.xml
+
+      - name: Require that PostgreSQL tests ran and none were skipped
+        run: |
+          uv run python - <<'EOF'
+          import xml.etree.ElementTree as ET
+          suite = ET.parse("postgres-results.xml").getroot().find("testsuite")
+          tests, skipped = int(suite.get("tests")), int(suite.get("skipped"))
+          print(f"postgres tests: {tests}, skipped: {skipped}")
+          if tests == 0 or skipped:
+              raise SystemExit("PostgreSQL/RLS tests did not all run")
+          EOF
+
+      - name: Stop PostgreSQL
+        if: always()
+        run: docker compose down -v
