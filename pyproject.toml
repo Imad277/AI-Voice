@@ -1,0 +1,50 @@
+[project]
+name = "voiceos"
+version = "0.0.0"
+description = "VoiceOS Phase 0 foundation: trusted context, tool gateway, booking safety and tenant-isolated PostgreSQL (offline only)."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "pydantic>=2.9,<3",
+    "psycopg[binary]>=3.2,<4",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+    "mypy>=1.13",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Import from src directly: macOS can flag .venv/*.pth files as hidden (e.g. iCloud-synced
+# folders), and Python skips hidden .pth files, which breaks the editable install.
+pythonpath = ["src", "tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "postgres: requires the Docker Compose PostgreSQL service (real RLS, non-owner app role)",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+# Python only; never reformat code samples inside research or architecture Markdown.
+extend-exclude = ["docs", "*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+# assert is the pytest idiom; fixture passwords are not used in tests (DSNs come from the environment).
+"tests/**" = ["S101"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["voiceos"]
+mypy_path = "src"
+plugins = ["pydantic.mypy"]
