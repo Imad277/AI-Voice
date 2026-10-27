@@ -1,0 +1,50 @@
+{"case_id": "S001", "category": "PERSON", "text": "Mein Name ist Erika Musterfrau.", "behaviors": ["clean"], "expected": {"first_name": "Erika", "last_name": "Musterfrau"}}
+{"case_id": "S002", "category": "PERSON", "text": "Ich heiße Max Mustermann.", "behaviors": ["fast_speech"], "expected": {"first_name": "Max", "last_name": "Mustermann"}}
+{"case_id": "S003", "category": "PERSON", "text": "Jürgen Prüfling, mit ü.", "behaviors": ["clean"], "expected": {"first_name": "Jürgen", "last_name": "Prüfling"}, "note": "umlaut, NFC"}
+{"case_id": "S004", "category": "PERSON", "text": "Anna-Lena Testmann, mit Bindestrich.", "behaviors": ["quiet_speech"], "expected": {"first_name": "Anna-Lena", "last_name": "Testmann"}, "note": "hyphenated first name"}
+{"case_id": "S005", "category": "PERSON", "text": "Hier ist Özlem Beispiel.", "behaviors": ["background_noise"], "expected": {"first_name": "Özlem", "last_name": "Beispiel"}, "note": "umlaut initial"}
+{"case_id": "S006", "category": "PERSON", "text": "Klaus Demo... äh, Klaus Demoweg.", "behaviors": ["self_correction"], "expected": {"first_name": "Klaus", "last_name": "Demoweg"}}
+{"case_id": "S007", "category": "PERSON", "text": "Sophie D'Example, mit Apostroph.", "behaviors": ["clean"], "expected": {"first_name": "Sophie", "last_name": "D'Example"}, "note": "apostrophe"}
+{"case_id": "S008", "category": "PERSON", "text": "Lukas ... Fiktivus.", "behaviors": ["think_pause"], "expected": {"first_name": "Lukas", "last_name": "Fiktivus"}}
+{"case_id": "S009", "category": "PERSON", "text": "Marie Probehaus, ich wiederhole: Marie Probehaus.", "behaviors": ["repeat"], "expected": {"first_name": "Marie", "last_name": "Probehaus"}}
+{"case_id": "S010", "category": "PHONE", "text": "Meine Nummer ist +49 30 0001001.", "behaviors": ["clean"], "expected": {"phone": "+49300001001"}}
+{"case_id": "S011", "category": "PHONE", "text": "+49 30 0001002", "behaviors": ["fast_speech"], "expected": {"phone": "+49300001002"}}
+{"case_id": "S012", "category": "PHONE", "text": "Die Nummer ist +49 30 000 1003.", "behaviors": ["think_pause"], "expected": {"phone": "+49300001003"}}
+{"case_id": "S013", "category": "PHONE", "text": "+49 30 0001005, nein, +49 30 0001004.", "behaviors": ["self_correction"], "expected": {"phone": "+49300001004"}}
+{"case_id": "S014", "category": "PHONE", "text": "Erreichbar unter +49 30 0001005.", "behaviors": ["quiet_speech"], "expected": {"phone": "+49300001005"}}
+{"case_id": "S015", "category": "PHONE", "text": "+49 30 0001006, also nochmal +49 30 0001006.", "behaviors": ["repeat"], "expected": {"phone": "+49300001006"}}
+{"case_id": "S016", "category": "PHONE", "text": "Rufen Sie +49 30 0001007 an.", "behaviors": ["background_noise"], "expected": {"phone": "+49300001007"}}
+{"case_id": "S017", "category": "PHONE", "text": "Mobil bin ich unter +49 30 0001008.", "behaviors": ["clean"], "expected": {"phone": "+49300001008"}}
+{"case_id": "S018", "category": "PHONE", "text": "Plus 49 30 0001009 bitte.", "behaviors": ["fast_speech"], "expected": {"phone": "+49300001009"}}
+{"case_id": "S019", "category": "EMAIL", "text": "Meine Mail ist erika.musterfrau@example.org.", "behaviors": ["clean"], "expected": {"email": "erika.musterfrau@example.org"}, "note": "dot in local part"}
+{"case_id": "S020", "category": "EMAIL", "text": "max_mustermann@example.org", "behaviors": ["fast_speech"], "expected": {"email": "max_mustermann@example.org"}, "note": "underscore"}
+{"case_id": "S021", "category": "EMAIL", "text": "anna-lena+termin@example.org, mit Plus.", "behaviors": ["clean"], "expected": {"email": "anna-lena+termin@example.org"}, "note": "plus and hyphen"}
+{"case_id": "S022", "category": "EMAIL", "text": "klaus.demo@example.org, nein, klaus.demoweg@example.org.", "behaviors": ["self_correction"], "expected": {"email": "klaus.demoweg@example.org"}}
+{"case_id": "S023", "category": "EMAIL", "text": "info.test@example.org", "behaviors": ["background_noise"], "expected": {"email": "info.test@example.org"}}
+{"case_id": "S024", "category": "EMAIL", "text": "Die Adresse ist ... lukas.fiktivus@example.org.", "behaviors": ["think_pause"], "expected": {"email": "lukas.fiktivus@example.org"}}
+{"case_id": "S025", "category": "EMAIL", "text": "marie.probehaus@example.org", "behaviors": ["quiet_speech"], "expected": {"email": "marie.probehaus@example.org"}}
+{"case_id": "S026", "category": "EMAIL", "text": "sophie.beispiel@example.org, ich wiederhole, sophie.beispiel@example.org.", "behaviors": ["repeat"], "expected": {"email": "sophie.beispiel@example.org"}}
+{"case_id": "S027", "category": "ADDRESS", "text": "Musterstraße 12, 10115 Musterstadt.", "behaviors": ["clean"], "expected": {"street": "Musterstraße", "house_number": "12", "postal_code": "10115", "city": "Musterstadt"}}
+{"case_id": "S028", "category": "ADDRESS", "text": "Beispielweg 3a, 01067 Probedorf.", "behaviors": ["clean"], "expected": {"street": "Beispielweg", "house_number": "3a", "postal_code": "01067", "city": "Probedorf"}, "note": "leading zero, suffix"}
+{"case_id": "S029", "category": "ADDRESS", "text": "Hauptstraße 7, 80331 Fiktivhausen.", "behaviors": ["fast_speech"], "expected": {"street": "Hauptstraße", "house_number": "7", "postal_code": "80331", "city": "Fiktivhausen"}}
+{"case_id": "S030", "category": "ADDRESS", "text": "Am Prüfstand 21 ... 04109 Testau.", "behaviors": ["think_pause"], "expected": {"street": "Am Prüfstand", "house_number": "21", "postal_code": "04109", "city": "Testau"}, "note": "leading zero"}
+{"case_id": "S031", "category": "ADDRESS", "text": "Lindenallee 8, nein, Lindenallee 5, 50667 Demostadt.", "behaviors": ["self_correction"], "expected": {"street": "Lindenallee", "house_number": "5", "postal_code": "50667", "city": "Demostadt"}}
+{"case_id": "S032", "category": "ADDRESS", "text": "Gartenstraße 14b, 20095 Übungsheim.", "behaviors": ["background_noise"], "expected": {"street": "Gartenstraße", "house_number": "14b", "postal_code": "20095", "city": "Übungsheim"}, "note": "umlaut city"}
+{"case_id": "S033", "category": "ADDRESS", "text": "Schulweg 2, 70173 Mustertal.", "behaviors": ["quiet_speech"], "expected": {"street": "Schulweg", "house_number": "2", "postal_code": "70173", "city": "Mustertal"}}
+{"case_id": "S034", "category": "ADDRESS", "text": "Bergstraße 40, 60311 Beispielberg, also Bergstraße 40.", "behaviors": ["repeat"], "expected": {"street": "Bergstraße", "house_number": "40", "postal_code": "60311", "city": "Beispielberg"}}
+{"case_id": "S035", "category": "DATETIME", "text": "Am 23.10.2026 um 09:00 Uhr.", "behaviors": ["clean"], "expected": {"date": "2026-10-23", "time": "09:00"}}
+{"case_id": "S036", "category": "DATETIME", "text": "Am 24.10.2026 um 14:30 Uhr.", "behaviors": ["fast_speech"], "expected": {"date": "2026-10-24", "time": "14:30"}}
+{"case_id": "S037", "category": "DATETIME", "text": "Morgen um 10:00 Uhr.", "behaviors": ["clean"], "expected": {"date": "2026-10-23", "time": "10:00"}, "note": "relative date, fixture clock 2026-10-22T08:00Z"}
+{"case_id": "S038", "category": "DATETIME", "text": "Dienstag ... um 11:00 Uhr.", "behaviors": ["think_pause"], "expected": {"date": "2026-10-27", "time": "11:00"}, "note": "weekday relative to fixture clock"}
+{"case_id": "S039", "category": "DATETIME", "text": "Am 28.10. um 15, nein, um 16:00 Uhr.", "behaviors": ["self_correction"], "expected": {"date": "2026-10-28", "time": "16:00"}}
+{"case_id": "S040", "category": "DATETIME", "text": "Am 28.03.2027 um 02:30 Uhr.", "behaviors": ["clean"], "expected": {"date": "2027-03-28", "time": "02:30"}, "note": "nonexistent local time (DST spring forward): must be rejected"}
+{"case_id": "S041", "category": "DATETIME", "text": "Am 25.10.2026 um 02:30 Uhr.", "behaviors": ["background_noise"], "expected": {"date": "2026-10-25", "time": "02:30"}, "note": "ambiguous local time (DST fall back): offset must be clarified"}
+{"case_id": "S042", "category": "DATETIME", "text": "Am 30.10.2026 um 08:15 Uhr.", "behaviors": ["quiet_speech"], "expected": {"date": "2026-10-30", "time": "08:15"}}
+{"case_id": "S043", "category": "MONEY", "text": "Das Budget sind 500 Euro.", "behaviors": ["clean"], "expected": {"amount_minor": 50000, "currency": "EUR"}}
+{"case_id": "S044", "category": "MONEY", "text": "Etwa 1.499,50 Euro.", "behaviors": ["clean"], "expected": {"amount_minor": 149950, "currency": "EUR"}, "note": "decimal amount"}
+{"case_id": "S045", "category": "MONEY", "text": "Bis zu 25.000 Euro.", "behaviors": ["fast_speech"], "expected": {"amount_minor": 2500000, "currency": "EUR"}, "note": "large amount"}
+{"case_id": "S046", "category": "MONEY", "text": "Achthundert Euro.", "behaviors": ["clean"], "expected": {"amount_minor": 80000, "currency": "EUR"}, "note": "written-out number"}
+{"case_id": "S047", "category": "MONEY", "text": "1.000, nein, 1.200 Euro.", "behaviors": ["self_correction"], "expected": {"amount_minor": 120000, "currency": "EUR"}}
+{"case_id": "S048", "category": "MONEY", "text": "So ... 350 Euro.", "behaviors": ["think_pause"], "expected": {"amount_minor": 35000, "currency": "EUR"}}
+{"case_id": "S049", "category": "MONEY", "text": "999 Euro, ich wiederhole, 999 Euro.", "behaviors": ["repeat"], "expected": {"amount_minor": 99900, "currency": "EUR"}}
+{"case_id": "S050", "category": "MONEY", "text": "75 Euro.", "behaviors": ["quiet_speech"], "expected": {"amount_minor": 7500, "currency": "EUR"}}

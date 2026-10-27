@@ -1,0 +1,15 @@
+# VoiceOS Phase 1 – local LiveKit development server for the transport gate only.
+#
+# livekit-server v1.13.8 (official image, released 2026-10-06) in --dev mode with the
+# public placeholder credentials devkey/secret. All ports are bound to 127.0.0.1; the
+# advertised node IP is 127.0.0.1, so media never leaves the machine. Not production.
+#
+#   docker compose -f docker-compose.livekit.yml up -d
+services:
+  livekit:
+    image: livekit/livekit-server:v1.13.8
+    command: ["--dev", "--bind", "0.0.0.0", "--node-ip", "127.0.0.1"]
+    ports:
+      - "127.0.0.1:7880:7880"      # signaling / HTTP API
+      - "127.0.0.1:7881:7881"      # WebRTC over TCP
+      - "127.0.0.1:7882:7882/udp"  # WebRTC over UDP

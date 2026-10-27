@@ -1,0 +1,10 @@
+{"case_id": "T01", "category": "GREETING", "text": "Guten Tag, hier ist der Terminservice von Muster Haustechnik. Wie kann ich Ihnen helfen?"}
+{"case_id": "T02", "category": "PERSON", "text": "Ich habe Sie als Erika Musterfrau notiert."}
+{"case_id": "T03", "category": "PHONE", "text": "Ihre Telefonnummer lautet null drei null, null null null eins null null eins."}
+{"case_id": "T04", "category": "EMAIL", "text": "Ihre E-Mail-Adresse ist erika punkt musterfrau at example punkt org."}
+{"case_id": "T05", "category": "ADDRESS", "text": "Ihre Adresse ist die Musterstraße zwölf."}
+{"case_id": "T06", "category": "ADDRESS", "text": "Postleitzahl eins null eins eins fünf, Ort Berlin."}
+{"case_id": "T07", "category": "DATE", "text": "Ihr Termin ist am Freitag, dem dreiundzwanzigsten Oktober zweitausendsechsundzwanzig."}
+{"case_id": "T08", "category": "TIME", "text": "Der Techniker kommt um vierzehn Uhr dreißig."}
+{"case_id": "T09", "category": "MONEY", "text": "Die Anfahrt kostet neunundvierzig Euro und neunzig Cent."}
+{"case_id": "T10", "category": "CONFIRMATION", "text": "Soll ich den Termin am dreiundzwanzigsten Oktober um neun Uhr verbindlich für Sie buchen?"}

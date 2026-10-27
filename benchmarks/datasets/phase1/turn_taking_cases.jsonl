@@ -1,0 +1,14 @@
+{"case_id": "TT01", "category": "NORMAL_SHORT", "critical": false, "segments": [{"text": "Ich möchte einen Termin vereinbaren."}]}
+{"case_id": "TT02", "category": "NORMAL_LONG", "critical": false, "segments": [{"text": "Guten Tag, ich rufe an, weil ich für meine Heizungsanlage eine Beratung brauche und gerne in der nächsten Woche am Vormittag einen Termin vereinbaren möchte."}]}
+{"case_id": "TT03", "category": "THINK_PAUSE_SHORT", "critical": false, "segments": [{"text": "Ich hätte gerne, ähm,"}, {"pause_ms": 300}, {"text": "einen Termin am Freitag."}]}
+{"case_id": "TT04", "category": "THINK_PAUSE_LONG", "critical": false, "segments": [{"text": "Ich hätte gerne, ähm,"}, {"pause_ms": 1200}, {"text": "einen Termin am Freitag."}]}
+{"case_id": "TT05", "category": "FALSE_ENDPOINT_200", "critical": false, "segments": [{"text": "Ich hätte gerne einen Termin"}, {"pause_ms": 200}, {"text": "am Freitag um zehn Uhr."}]}
+{"case_id": "TT06", "category": "FALSE_ENDPOINT_400", "critical": true, "segments": [{"text": "Ich hätte gerne einen Termin"}, {"pause_ms": 400}, {"text": "am Freitag um zehn Uhr."}]}
+{"case_id": "TT07", "category": "FALSE_ENDPOINT_700", "critical": true, "segments": [{"text": "Ich hätte gerne einen Termin"}, {"pause_ms": 700}, {"text": "am Freitag um zehn Uhr."}]}
+{"case_id": "TT08", "category": "LATE_ENDPOINT_SHORT", "critical": false, "segments": [{"text": "Ja."}]}
+{"case_id": "TT09", "category": "LATE_ENDPOINT_PHONE", "critical": true, "segments": [{"text": "Meine Telefonnummer ist null drei null, eins zwei drei, vier fünf sechs sieben."}], "expect_digits": "0301234567"}
+{"case_id": "TT10", "category": "LATE_ENDPOINT_DATETIME", "critical": false, "segments": [{"text": "Am Freitag, dem dreiundzwanzigsten Oktober, um zehn Uhr dreißig."}]}
+{"case_id": "TT11", "category": "BARGE_IN_200", "critical": true, "segments": [{"text": "Mein Name ist Erika Musterfrau, meine Telefonnummer ist null drei null, eins zwei drei, vier fünf sechs sieben."}], "barge_in": {"offset_ms": 200, "segments": [{"text": "Nein, Moment, die Nummer stimmt nicht."}]}}
+{"case_id": "TT12", "category": "BARGE_IN_500", "critical": true, "segments": [{"text": "Mein Name ist Erika Musterfrau, meine Telefonnummer ist null drei null, eins zwei drei, vier fünf sechs sieben."}], "barge_in": {"offset_ms": 500, "segments": [{"text": "Nein, Moment, die Nummer stimmt nicht."}]}}
+{"case_id": "TT13", "category": "BARGE_IN_1000", "critical": true, "segments": [{"text": "Mein Name ist Erika Musterfrau, meine Telefonnummer ist null drei null, eins zwei drei, vier fünf sechs sieben."}], "barge_in": {"offset_ms": 1000, "segments": [{"text": "Nein, Moment, die Nummer stimmt nicht."}]}}
+{"case_id": "TT14", "category": "SELF_CORRECTION", "critical": false, "segments": [{"text": "Meine Nummer ist null drei null, eins zwei drei,"}, {"pause_ms": 250}, {"text": "nein, Entschuldigung, null vier null, eins zwei drei vier."}], "expect_digits": "0401234"}
