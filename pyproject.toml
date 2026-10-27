@@ -14,19 +14,63 @@ dev = [
     "ruff>=0.8",
     "mypy>=1.13",
 ]
+# Phase 1 benchmark only: runtime candidate SDKs, exact pins, never installed by default
+# (uv sync --group voice-sdk). No provider plugins. Imported lazily only inside the
+# benchmark runtime/harness modules listed in tests/unit/test_repo_hygiene.py
+# (runtimes, turn_runtimes, livekit_local, e2e_gate, turn_gate).
+voice-sdk = [
+    "livekit-agents==1.8.3",
+    "pipecat-ai[livekit]==1.12.0",
+]
+# Phase 1 STT baseline gate only: Deepgram SDK, exact pin, never installed by default
+# (uv sync --group stt-deepgram). Imported only inside voiceos/benchmark/providers.py.
+stt-deepgram = [
+    "deepgram-sdk==7.12.0",
+]
+# Phase 1 LLM baseline gate only: OpenAI SDK pinned to exactly the version uv.lock already
+# resolves transitively for voice-sdk (livekit-agents needs openai<3), so no second or
+# conflicting pin exists. Imported only inside voiceos/benchmark/providers.py.
+llm-openai = [
+    "openai==2.54.0",
+]
+# Phase 1 TTS baseline gate only: ElevenLabs SDK, exact pin (newest release older than two
+# weeks), never installed by default (uv sync --group tts-elevenlabs). Imported only inside
+# voiceos/benchmark/providers.py.
+tts-elevenlabs = [
+    "elevenlabs==2.71.0",
+]
+# Phase 1 TTS challenger gate only: Cartesia SDK, exact pin (current release, older than two
+# weeks), without the websockets extra (it would require websockets<16, while the lock has
+# 17.x). HTTP streaming only. Imported only inside voiceos/benchmark/providers.py.
+tts-cartesia = [
+    "cartesia==4.2.0",
+]
+
+[tool.uv]
+default-groups = ["dev"]
 
 [build-system]
 requires = ["uv_build>=0.13.5,<0.14.0"]
 build-backend = "uv_build"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+# tests/integration needs the local LiveKit dev server and/or live provider keys (Deepgram,
+# OpenAI, ElevenLabs, Cartesia); run it explicitly per marker, never in CI.
+testpaths = ["tests/unit", "tests/postgres"]
 # Import from src directly: macOS can flag .venv/*.pth files as hidden (e.g. iCloud-synced
 # folders), and Python skips hidden .pth files, which breaks the editable install.
 pythonpath = ["src", "tests"]
 addopts = "-ra --strict-markers"
 markers = [
     "postgres: requires the Docker Compose PostgreSQL service (real RLS, non-owner app role)",
+    "livekit_local: requires the local LiveKit dev server (docker-compose.livekit.yml)",
+    "deepgram_live: live Deepgram STT gate; needs DEEPGRAM_API_KEY; never in CI",
+    "openai_live: live OpenAI LLM gate; needs OPENAI_API_KEY and credit; never in CI",
+    "elevenlabs_live: live ElevenLabs TTS gate; needs ELEVENLABS_API_KEY; never in CI",
+    "cartesia_live: live Cartesia TTS challenger gate; needs CARTESIA_API_KEY; never in CI",
+    "livekit_e2e: live LiveKit end-to-end voice gate; local server + provider keys; never in CI",
+    "pipecat_e2e: live Pipecat end-to-end voice gate; local server + provider keys; never in CI",
+    "turn_taking_live: live turn-taking gate smoke, both runtimes; never in CI",
 ]
 
 [tool.ruff]
@@ -48,3 +92,10 @@ strict = true
 packages = ["voiceos"]
 mypy_path = "src"
 plugins = ["pydantic.mypy"]
+
+# Optional SDK groups (voice-sdk, stt-*, llm-*, tts-*): not installed in CI. Treat the SDKs as untyped so type checking
+# gives the same result with and without the group.
+[[tool.mypy.overrides]]
+module = ["livekit.*", "pipecat.*", "deepgram.*", "openai.*", "elevenlabs.*", "cartesia.*"]
+follow_imports = "skip"
+ignore_missing_imports = true

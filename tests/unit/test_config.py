@@ -45,6 +45,14 @@ def test_env_example_ships_safe_defaults_and_no_secret_values() -> None:
             values[key] = value
     assert values["VOICEOS_LIVE_ENABLED"] == "false"
     assert values["VOICEOS_RECORDING_ENABLED"] == "false"
-    for key in ("POSTGRES_PASSWORD", "VOICEOS_MIGRATOR_PASSWORD", "VOICEOS_APP_PASSWORD"):
+    for key in (
+        "POSTGRES_PASSWORD",
+        "VOICEOS_MIGRATOR_PASSWORD",
+        "VOICEOS_APP_PASSWORD",
+        "DEEPGRAM_API_KEY",
+        "OPENAI_API_KEY",
+        "ELEVENLABS_API_KEY",
+        "CARTESIA_API_KEY",
+    ):
         assert values[key] == "", f"{key} must be empty in .env.example"
     assert load_settings(values).live_enabled is False

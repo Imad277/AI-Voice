@@ -10,3 +10,7 @@ __pycache__/
 
 # Local secrets (copy .env.example to .env); never commit
 .env
+
+# Benchmark run output (local evidence; never committed by default)
+benchmarks/results/
+benchmarks/audio/
