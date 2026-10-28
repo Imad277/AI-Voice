@@ -412,9 +412,15 @@ def test_database_accepts_exactly_the_domain_values(
     values: type[StrEnum], key_sql: str,
 ) -> None:  # fmt: skip
     key = {
-        "organizations": TENANT_A, "users": USER_A, "organization_memberships": USER_A,
+        "organizations": TENANT_A, "users": USER_A, "organization_memberships": USER_LONER,
         "agents": world["agent_a"], "deployments": world["deployment_a"],
     }[table]  # fmt: skip
+    if table == "organization_memberships":
+        # A non-owner member: since 0003 the last active OWNER cannot be changed (guard).
+        migrator.execute(
+            "INSERT INTO voiceos.organization_memberships (tenant_id, user_id, role)"
+            " VALUES (%s, %s, 'READ_ONLY')", (TENANT_A, USER_LONER),
+        )  # fmt: skip
     for value in values:
         migrator.execute(f"UPDATE voiceos.{table} SET {column} = %s WHERE {key_sql}", (value, key))
     with pytest.raises(errors.CheckViolation):
