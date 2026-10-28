@@ -3,7 +3,8 @@
 Any violation is a hard failure even if no leak has been observed: the application role
 must not be superuser, must not have BYPASSRLS, must not own (or be able to assume the
 owner of) protected tables, and every table must have RLS enabled and forced and carry
-tenant_id.
+tenant_id. The only exception to the tenant_id rule is the documented global identity
+table ``users`` (PHASE2_DOMAIN_MODEL.md §11); it must still have RLS enabled and forced.
 """
 
 from __future__ import annotations
@@ -12,6 +13,9 @@ from voiceos.tenancy.db import Conn
 
 SCHEMA = "voiceos"
 MIGRATOR_ROLE = "voiceos_migrator"
+# Documented global tables without tenant_id (CLAUDE.md rule 8 exception). Exempt from the
+# tenant_id check only; RLS enabled/forced and non-ownership are still required.
+GLOBAL_TABLES = frozenset({"users"})
 
 
 class PreflightError(Exception):
@@ -68,7 +72,7 @@ def preflight_violations(conn: Conn) -> list[str]:
             violations.append(f"table {name}: row level security not enabled")
         if not force:
             violations.append(f"table {name}: row level security not forced")
-        if not has_tenant_id:
+        if not has_tenant_id and name not in GLOBAL_TABLES:
             violations.append(f"table {name}: no tenant_id column")
     return violations
 
