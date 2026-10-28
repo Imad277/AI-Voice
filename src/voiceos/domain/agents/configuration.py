@@ -7,9 +7,10 @@ or ad-hoc provider parameters.
 
 Providers, voices, tools and knowledge sources are referenced by opaque references only
 (``*_ref``); no provider is named or selected here (decision register D-03/04/05).
-Until the tool registry and the knowledge platform exist, tool and knowledge references
-are validated for syntax and duplicates only; their existence and tenant ownership are
-validated by the later PRs that introduce those tables.
+``tool_refs`` name tool instances of the organization (``tool_instances.ref``); their
+existence, tenant ownership and usability are checked when a version is published
+(application use case and 0005 database trigger). Knowledge references are validated for
+syntax and duplicates only until the knowledge platform exists.
 """
 
 from __future__ import annotations

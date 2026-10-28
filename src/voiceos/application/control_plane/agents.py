@@ -13,7 +13,7 @@ organization behaves exactly like an unknown id. Database-independent: the
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Protocol, TypeGuard
@@ -56,6 +56,14 @@ class InvalidAgentConfiguration(Exception):
 
 class LifecycleConflict(Exception):
     """The requested transition is not allowed in the current state."""
+
+
+class UnusableToolReferences(Exception):
+    """The version names tool instances the organization cannot use (see issues)."""
+
+    def __init__(self, issues: tuple[str, ...]) -> None:
+        super().__init__(f"unusable tool references ({len(issues)} issues)")
+        self.issues = issues
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,9 +139,19 @@ class AgentLifecycleStore(Protocol):
     ) -> list[DeploymentView]: ...
 
 
+class ToolReferenceValidator(Protocol):
+    """Checks the tool instance refs of a configuration (implemented by the integration
+    use cases); returns issues, empty if every ref is usable."""
+
+    def validate_agent_tool_references(
+        self, principal: Principal, refs: Sequence[str]
+    ) -> tuple[str, ...]: ...
+
+
 class AgentService:
-    def __init__(self, store: AgentLifecycleStore) -> None:
+    def __init__(self, store: AgentLifecycleStore, tools: ToolReferenceValidator) -> None:
         self._store = store
+        self._tools = tools
 
     # -- agents and drafts --------------------------------------------------------------
 
@@ -211,8 +229,12 @@ class AgentService:
         configuration = self._valid(version.configuration)
         if configuration.hash() != version.configuration_hash:
             raise LifecycleConflict("configuration does not match its hash")
-        # Tool and knowledge references are checked for syntax and duplicates only until
-        # the tool registry and knowledge platform exist (see domain configuration).
+        # Every tool ref must name a usable tool instance of this organization (re-checked
+        # by the database when the status changes); knowledge refs are still checked for
+        # syntax and duplicates only (see domain configuration).
+        issues = self._tools.validate_agent_tool_references(principal, configuration.tool_refs)
+        if issues:
+            raise UnusableToolReferences(issues)
         return self._store.publish_version(principal, version_id, version.configuration_hash)
 
     def archive_version(self, principal: Principal, version_id: AgentVersionId) -> VersionView:

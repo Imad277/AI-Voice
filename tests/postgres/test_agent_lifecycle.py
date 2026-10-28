@@ -27,6 +27,7 @@ from voiceos.application.control_plane.agents import (
     VersionNotFound,
     VersionView,
 )
+from voiceos.application.control_plane.integrations import IntegrationService
 from voiceos.config import Settings
 from voiceos.domain.agents.model import (
     AgentId,
@@ -39,6 +40,7 @@ from voiceos.domain.agents.model import (
 from voiceos.domain.identity.model import MembershipRole, OrganizationId, UserId
 from voiceos.domain.identity.rbac import PermissionDenied, Principal
 from voiceos.infrastructure.postgres.agents import PostgresAgentStore
+from voiceos.infrastructure.postgres.integrations import PostgresIntegrationStore
 from voiceos.infrastructure.postgres.scope import organization_transaction
 from voiceos.tenancy.db import Conn, connect_app
 
@@ -91,8 +93,8 @@ def store(app_conn: Conn, people: None) -> PostgresAgentStore:
 
 
 @pytest.fixture
-def service(store: PostgresAgentStore) -> AgentService:
-    return AgentService(store)
+def service(store: PostgresAgentStore, app_conn: Conn) -> AgentService:
+    return AgentService(store, IntegrationService(PostgresIntegrationStore(app_conn)))
 
 
 def _count(conn: Conn, sql: str, *params: object) -> int:
@@ -439,7 +441,8 @@ def test_rollback_rebinds_without_touching_versions(service: AgentService) -> No
 
 def _service(settings: Settings) -> tuple[AgentService, Conn]:
     conn = connect_app(settings)
-    return AgentService(PostgresAgentStore(conn)), conn
+    tools = IntegrationService(PostgresIntegrationStore(conn))
+    return AgentService(PostgresAgentStore(conn), tools), conn
 
 
 def test_parallel_draft_updates_lose_no_update(service: AgentService, settings: Settings) -> None:
