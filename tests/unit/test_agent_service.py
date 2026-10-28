@@ -4,7 +4,7 @@ selection. The PostgreSQL store is exercised in tests/postgres/test_agent_lifecy
 from __future__ import annotations
 
 import re
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -21,6 +21,7 @@ from voiceos.application.control_plane.agents import (
     InvalidAgentConfiguration,
     LifecycleConflict,
     StaleDraftRevision,
+    UnusableToolReferences,
     VersionNotFound,
     VersionView,
 )
@@ -163,9 +164,28 @@ def store() -> FakeStore:
     return FakeStore()
 
 
+class FakeTools:
+    """Tool reference validator double: refs listed in ``unusable`` are reported."""
+
+    def __init__(self) -> None:
+        self.unusable: set[str] = set()
+        self.checked: list[tuple[str, ...]] = []
+
+    def validate_agent_tool_references(
+        self, principal: Principal, refs: Sequence[str]
+    ) -> tuple[str, ...]:
+        self.checked.append(tuple(refs))
+        return tuple(f"tool_refs.{i}: unusable" for i, r in enumerate(refs) if r in self.unusable)
+
+
 @pytest.fixture
-def service(store: FakeStore) -> AgentService:
-    return AgentService(store)
+def tools() -> FakeTools:
+    return FakeTools()
+
+
+@pytest.fixture
+def service(store: FakeStore, tools: FakeTools) -> AgentService:
+    return AgentService(store, tools)
 
 
 OWNER = _principal(R.OWNER)
@@ -382,3 +402,22 @@ def test_rollback_needs_a_deployment(service: AgentService) -> None:
     with pytest.raises(LifecycleConflict):
         service.rollback_deployment(OWNER, agent.agent_id, PROD)
     assert service.get_deployment(OWNER, agent.agent_id, DEV) is None
+
+
+def test_publish_requires_usable_tool_references(
+    service: AgentService, store: FakeStore, tools: FakeTools
+) -> None:
+    agent = service.create_agent(
+        OWNER, "R", draft=agent_configuration(tool_refs=["calendar-main", "crm-main"])
+    )
+    version = service.create_version(OWNER, agent.agent_id, 0)
+    tools.unusable = {"crm-main"}
+    with pytest.raises(UnusableToolReferences) as raised:
+        service.publish_version(OWNER, version.agent_version_id)
+    assert raised.value.issues == ("tool_refs.1: unusable",)
+    assert "publish_version" not in store.calls
+    tools.unusable = set()
+    assert service.publish_version(OWNER, version.agent_version_id).status is (
+        AgentVersionStatus.PUBLISHED
+    )
+    assert tools.checked[-1] == ("calendar-main", "crm-main")  # the snapshot's refs

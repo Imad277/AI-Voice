@@ -61,10 +61,11 @@ def migrator(settings: Settings) -> Iterator[Conn]:
 @pytest.fixture(autouse=True)
 def _clean_ledger(migrator: Conn) -> None:
     migrator.execute("TRUNCATE voiceos.booking_operations")
-    # Product foundation tables (0002). Truncation bypasses the immutability trigger,
-    # which guards UPDATE/DELETE of published versions, not test resets.
+    # Product tables (0002, 0005; the global 0005 catalog is kept). Truncation bypasses the
+    # immutability trigger, which guards UPDATE/DELETE of published versions, not test resets.
     migrator.execute(
         "TRUNCATE voiceos.deployments, voiceos.agent_versions, voiceos.agents,"
+        " voiceos.tool_instances, voiceos.integration_connections,"
         " voiceos.organization_memberships, voiceos.organizations, voiceos.users"
     )
 
