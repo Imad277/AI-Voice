@@ -72,3 +72,25 @@ def book(gateway: ToolGateway, ctx: CallContext, slot_id: str = "slot_a_0900") -
     confirm_contact(gateway, ctx)
     confirm_slot(gateway, ctx, slot_id)
     return gateway.execute(ctx, req("calendar.book_slot", pid="book", slot_id=slot_id))
+
+
+def agent_configuration(**overrides: object) -> dict[str, object]:
+    """A complete, valid synthetic agent configuration (generic references only)."""
+    configuration: dict[str, object] = {
+        "name": "Reception",
+        "description": "Answers questions and takes appointment requests.",
+        "language": "de-DE",
+        "system_instructions": "Be brief and polite. Never claim a booking before confirmation.",
+        "opening_message": "Guten Tag, wie kann ich helfen?",
+        "conversation_goals": ["Understand the request", "Collect the contact details"],
+        "compliance": {"ai_disclosure": True, "disclosure_text": "Sie sprechen mit einer KI."},
+        "models": {
+            "stt_profile_ref": "stt.default",
+            "llm_profile_ref": "llm.default",
+            "tts_profile_ref": "tts.default",
+            "voice_ref": "voice.neutral-1",
+            "turn_taking_profile_ref": "turn.balanced",
+        },
+    }
+    configuration.update(overrides)
+    return configuration
