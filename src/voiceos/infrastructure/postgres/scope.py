@@ -13,6 +13,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 
 from voiceos.domain.identity.model import OrganizationScope
+from voiceos.domain.identity.rbac import AuthenticatedUser
 from voiceos.tenancy.db import Conn
 
 
@@ -24,5 +25,19 @@ def organization_transaction(conn: Conn, scope: OrganizationScope) -> Iterator[C
         conn.execute(
             "SELECT set_config('app.tenant_id', %s, true), set_config('app.user_id', %s, true)",
             (str(scope.organization_id), str(scope.user_id) if scope.user_id else ""),
+        )
+        yield conn
+
+
+@contextmanager
+def user_transaction(conn: Conn, user: AuthenticatedUser) -> Iterator[Conn]:
+    """Bind only the acting user (no organization), for identity-level privileged calls
+    such as listing the user's own memberships or creating an organization."""
+    if not isinstance(user, AuthenticatedUser):
+        raise TypeError("user_transaction requires an AuthenticatedUser")
+    with conn.transaction():
+        conn.execute(
+            "SELECT set_config('app.tenant_id', '', true), set_config('app.user_id', %s, true)",
+            (str(user.user_id),),
         )
         yield conn
